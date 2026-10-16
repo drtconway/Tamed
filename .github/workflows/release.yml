@@ -1,18 +1,22 @@
+# Pushing a version tag (e.g. v2.1.0) builds the addon zip with the BigWigs
+# packager and publishes it, with release.json for WowUp, as a GitHub release.
 name: Release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*"
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # to create the release
     steps:
       - uses: actions/checkout@v7
-      - name: Release
-        uses: BigWigsMods/packager@v2
         with:
-          args: -p 466858
+          fetch-depth: 0  # the packager reads tags from history
+
+      - uses: BigWigsMods/packager@v2
         env:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
